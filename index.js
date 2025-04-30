@@ -8,6 +8,7 @@ import mongoose from "mongoose";
 import morgan from "morgan";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
+import errorHandlerMiddleware from "./middlewares/errorHandlerMiddleware.js";
 
 const app = express();
 
@@ -18,6 +19,12 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(express.static(path.resolve(_dirname, "./public")));
 app.use(morgan("tiny"));
+
+app.use("*", (req, res) => {
+  res.status(404).json({ message: "not found" }); //this error will trigger when the request route do not match any of the above routes
+});
+
+app.use(errorHandlerMiddleware); //all errors other than 404
 
 const port = 3000 || process.env.port;
 try {
